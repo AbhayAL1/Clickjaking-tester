@@ -36,27 +36,54 @@
             height: 500px;
             border: 1px solid #ccc;
         }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Test a Page for Clickjacking Vulnerability</h1>
     <p>Enter the URL to frame:</p>
-    <input type="text" id="urlInput" placeholder="Enter URL here">
+    <input type="text" id="urlInput" placeholder="e.g., https://example.com">
     <button onclick="testClickjacking()">Test it!</button>
-    <iframe id="testFrame" style="display: none;"></iframe>
+    <p id="errorMessage" class="error-message" style="display: none;">Failed to load the page. It might be protected against framing.</p>
+    <iframe id="testFrame" style="display: none;" onerror="handleIframeError()"></iframe>
 
     <script>
         function testClickjacking() {
             const urlInput = document.getElementById('urlInput').value;
             const iframe = document.getElementById('testFrame');
+            const errorMessage = document.getElementById('errorMessage');
 
-            if (urlInput) {
+            // Reset error message
+            errorMessage.style.display = 'none';
+
+            if (isValidUrl(urlInput)) {
                 iframe.style.display = 'block';
                 iframe.src = urlInput;
             } else {
                 alert('Please enter a valid URL.');
                 iframe.style.display = 'none';
             }
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function handleIframeError() {
+            const iframe = document.getElementById('testFrame');
+            const errorMessage = document.getElementById('errorMessage');
+
+            iframe.style.display = 'none';
+            errorMessage.style.display = 'block';
         }
     </script>
 </body>
