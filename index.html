@@ -9,87 +9,58 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        h1 {
-            color: #333;
-        }
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
+        input, button {
             margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
         iframe {
-            margin-top: 20px;
             width: 100%;
             height: 500px;
             border: 1px solid #ccc;
+            margin-top: 20px;
         }
         .error-message {
             color: red;
-            margin-top: 10px;
             font-weight: bold;
         }
     </style>
 </head>
 <body>
     <h1>Test a Page for Clickjacking Vulnerability</h1>
-    <p>Enter the URL to frame:</p>
-    <input type="text" id="urlInput" placeholder="e.g., https://example.com">
+    <input type="text" id="urlInput" placeholder="Enter URL to test" style="width: 80%; padding: 10px;">
     <button onclick="testClickjacking()">Test it!</button>
-    <p id="errorMessage" class="error-message" style="display: none;">The page could not be loaded in an iframe. It may have restrictions like <code>X-Frame-Options</code>.</p>
-    <iframe id="testFrame" style="display: none;" onload="handleIframeLoad()" onerror="handleIframeError()"></iframe>
+    <p id="debugMessage" class="error-message"></p>
+    <iframe id="testFrame" style="display: none;"></iframe>
 
     <script>
         function testClickjacking() {
-            const urlInput = document.getElementById('urlInput').value.trim();
-            const iframe = document.getElementById('testFrame');
-            const errorMessage = document.getElementById('errorMessage');
+            const urlInput = document.getElementById("urlInput").value.trim();
+            const iframe = document.getElementById("testFrame");
+            const debugMessage = document.getElementById("debugMessage");
 
-            // Reset states
-            iframe.style.display = 'none';
-            errorMessage.style.display = 'none';
+            // Reset debug message and iframe
+            debugMessage.textContent = "";
+            iframe.style.display = "none";
+
+            if (!urlInput) {
+                debugMessage.textContent = "Please enter a URL.";
+                return;
+            }
 
             // Validate URL
-            if (isValidUrl(urlInput)) {
-                iframe.style.display = 'block';
-                iframe.src = urlInput.startsWith("http") ? urlInput : `https://${urlInput}`;
-            } else {
-                alert('Please enter a valid URL.');
-            }
-        }
-
-        function isValidUrl(string) {
+            let testUrl;
             try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
+                testUrl = new URL(urlInput);
+            } catch {
+                debugMessage.textContent = "Invalid URL. Make sure to include http:// or https://.";
+                return;
             }
-        }
 
-        function handleIframeError() {
-            const iframe = document.getElementById('testFrame');
-            const errorMessage = document.getElementById('errorMessage');
+            // Set iframe source
+            iframe.src = testUrl.href;
+            iframe.style.display = "block";
 
-            iframe.style.display = 'none';
-            errorMessage.style.display = 'block';
-        }
-
-        function handleIframeLoad() {
-            // Hide error message once iframe successfully loads
-            document.getElementById('errorMessage').style.display = 'none';
+            // Debugging message
+            console.log(`Testing URL: ${testUrl.href}`);
         }
     </script>
 </body>
