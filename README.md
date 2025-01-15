@@ -34,7 +34,7 @@ This project is a simple web-based tool for testing web pages for clickjacking v
 
 ## Example Screenshot
 
-![Clickjacking Tester](example-screenshot.png)
+![Clickjacking Tester](https://github.com/user-attachments/assets/4ffc78dd-7dd3-4217-91cd-3493c911a054)
 
 ## Technologies Used
 
