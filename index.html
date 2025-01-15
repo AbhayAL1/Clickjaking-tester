@@ -48,24 +48,25 @@
     <p>Enter the URL to frame:</p>
     <input type="text" id="urlInput" placeholder="e.g., https://example.com">
     <button onclick="testClickjacking()">Test it!</button>
-    <p id="errorMessage" class="error-message" style="display: none;">Failed to load the page. It might be protected against framing.</p>
-    <iframe id="testFrame" style="display: none;" onerror="handleIframeError()"></iframe>
+    <p id="errorMessage" class="error-message" style="display: none;">The page could not be loaded in an iframe. It may have restrictions like <code>X-Frame-Options</code>.</p>
+    <iframe id="testFrame" style="display: none;" onload="handleIframeLoad()" onerror="handleIframeError()"></iframe>
 
     <script>
         function testClickjacking() {
-            const urlInput = document.getElementById('urlInput').value;
+            const urlInput = document.getElementById('urlInput').value.trim();
             const iframe = document.getElementById('testFrame');
             const errorMessage = document.getElementById('errorMessage');
 
-            // Reset error message
+            // Reset states
+            iframe.style.display = 'none';
             errorMessage.style.display = 'none';
 
+            // Validate URL
             if (isValidUrl(urlInput)) {
                 iframe.style.display = 'block';
-                iframe.src = urlInput;
+                iframe.src = urlInput.startsWith("http") ? urlInput : `https://${urlInput}`;
             } else {
                 alert('Please enter a valid URL.');
-                iframe.style.display = 'none';
             }
         }
 
@@ -84,6 +85,11 @@
 
             iframe.style.display = 'none';
             errorMessage.style.display = 'block';
+        }
+
+        function handleIframeLoad() {
+            // Hide error message once iframe successfully loads
+            document.getElementById('errorMessage').style.display = 'none';
         }
     </script>
 </body>
